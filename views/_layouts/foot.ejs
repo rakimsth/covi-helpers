@@ -1,0 +1,25 @@
+<!-- Mainly scripts -->
+<script src="/js/jquery-3.1.1.min.js"></script>
+<script src="/js/jquery.cookie.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/core/rs.js"></script>
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+<!-- Sweet alert -->
+<script src="/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script>
+  $(document).ready(function() {
+    if ($.cookie("name")) {
+      let curUser = JSON.parse($.cookie("name"));
+      $("#searchbar_welcome").html(curUser.first);
+    }
+
+    //
+    $("#mnuMgmt").show();
+  });
+</script>

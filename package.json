@@ -1,0 +1,32 @@
+{
+  "name": "covi-helpers",
+  "version": "0.0.0",
+  "description": "Platform for those who want to help or get help from the people nearby along with nearby infrastructures such as hospitals/food centers status",
+  "author": "Raktim Shrestha <rakimsth@gmail.com>",
+  "private": true,
+  "scripts": {
+    "start": "cross-env NODE_ENV=development nodemon ./bin/www",
+    "dev": "cross-env NODE_ENV=development yarn install --ignore-engines",
+    "build": "NODE_ENV=production yarn install --ignore-engines",
+    "production": "NODE_ENV=production node ./bin/www"
+  },
+  "dependencies": {
+    "config": "^3.2.2",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "handlebars": "^4.0.12",
+    "helmet": "^3.22.0",
+    "http-errors": "~1.6.2",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.2.9",
+    "morgan": "~1.9.0",
+    "nodemailer": "^4.6.3",
+    "passport": "^0.4.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth": "^1.0.0",
+    "rs-user": "git+ssh://git@lab.rumsan.net:rs/user.git"
+  }
+}

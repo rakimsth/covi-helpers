@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../_layouts/head %>
+    <link href="../css/plugins/dataTables/datatables.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .alignstatus {
+        align-self: center;
+      }
+      .ibox-title {
+        padding: 15px 40px 5px 40px;
+      }
+    </style>
+  </head>
+
+  <body class="md-skin">
+    <% include ../_layouts/header %>
+    <div id="wrapper">
+      <% include ../_layouts/sidebar %>
+      <div id="page-wrapper" class="gray-bg">
+        <% include ../_layouts/search %>
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="ibox ">
+                <div class="ibox-title">
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <h2>
+                        System Users
+                        <small
+                          class="badge badge-warning"
+                          style="font-weight: normal"
+                          id="txtFilter"
+                        ></small>
+                      </h2>
+                    </div>
+                    <div class="col-sm-6"></div>
+                    <div class="col-sm-2 text-right">
+                      <a
+                        href="#"
+                        data-toggle="modal"
+                        data-target="#mdlUserAdd"
+                        data
+                        class="btn btn-primary"
+                        ><i class="fa fa-plus-circle"></i>&nbsp;Add User</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="ibox-content" style="padding-top:5px;min-height:500px">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover pTable">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Phone</th>
+                          <th>Email</th>
+                          <th>Gender</th>
+                          <th>Date of Birth</th>
+                          <th>Is Active?</th>
+                          <th width="100" style="text-align:center">Action</th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% include ../_layouts/footer %>
+      </div>
+    </div>
+    <% include ./add %> <% include ../_layouts/foot %>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"
+    ></script>
+
+    <!--Data Tables -->
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"
+    ></script>
+    <script src="../js/plugins/dataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+      let pTable;
+      const addUser = () => {
+        let form = $("#frmUserAdd");
+
+        if (!form.isValid()) return;
+
+        let formData = rs.form.get(form);
+
+        $.ajax({
+          url: "/api/v1/users",
+          method: "POST",
+          headers: { access_token: $.cookie("access_token") },
+          data: formData
+        })
+          .done(function(data) {
+            pTable.ajax.reload();
+            form[0].reset();
+            $("#mdlUserAdd").modal("hide");
+          })
+          .fail(function(err) {
+            alert(err.responseJSON.message);
+          });
+      };
+
+      $(document).ready(function() {
+        pTable = $(".pTable").DataTable({
+          pageLength: 25,
+          processing: true,
+          responsive: true,
+          filter: true,
+          sort: false,
+          serverSide: true,
+          searchDelay: 500,
+          dom: "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-4'i><'col-sm-8'<'float-right p-2'p>>>",
+          ajax: {
+            url: "/api/v1/users",
+            headers: { access_token: $.cookie("access_token") },
+            dataFilter: data => {
+              let json = JSON.parse(data);
+              json.recordsTotal = json.total;
+              json.recordsFiltered = json.total;
+              return JSON.stringify(json); // return JSON string
+            },
+            data: function(d) {
+              return $.extend({}, { start: d.start, limit: d.length, search: d.search.value });
+            }
+          },
+          columns: [
+            { data: "full_name" },
+            {
+              data: null,
+              render: d => {
+                let phone = d.comms.find(e => {
+                  return e.type == "phone";
+                });
+                return phone ? phone.address : "";
+              }
+            },
+            {
+              data: null,
+              render: d => {
+                let email = d.comms.find(e => {
+                  return e.type == "email";
+                });
+                return email ? email.address : "";
+              }
+            },
+            {
+              data: null,
+              render: d => {
+                return d.gender || "";
+              }
+            },
+            {
+              data: null,
+              render: d => {
+                return d.dob || "";
+              }
+            },
+            {
+              data: null,
+              render: d => {
+                if (d.is_active)
+                  return `<input type="checkbox" checked onclick="changeUserStatus('${
+                    d._id
+                  }', this)" />`;
+                else
+                  return `<input type="checkbox" onclick="changeUserStatus('${d._id}', this)" />`;
+              }
+            },
+            {
+              data: null,
+              class: "text-center",
+              render: function(data, type, full, meta) {
+                return `&nbsp;&nbsp;
+                            <a href='/users/${data._id}' title='Edit Employee' data-employeeId=${
+                  data.id
+                } onclick='editUser("${data.id}")'><i class='fa fa-pencil'></i></a>&nbsp;&nbsp;`;
+              }
+            }
+          ]
+        });
+
+        $("#frmUserAdd [name=roles]").select2({
+          dropdownParent: $("#mdlUserAdd .modal-header"),
+          width: "100%",
+          minimumInputLength: 2,
+          placeholder: "Search for a role",
+          ajax: {
+            url: "/api/v1/roles",
+            headers: rs.session.getToken(),
+            dataType: "json",
+            data: function(params) {
+              var query = {
+                search: params.term,
+                limit: 5
+              };
+              return query;
+            },
+            processResults: data => {
+              data = _.map(data.data, d => {
+                d.id = d.name;
+                return d;
+              });
+              return {
+                results: data
+              };
+            },
+            cache: true
+          },
+          escapeMarkup: markup => {
+            return markup;
+          },
+          templateResult: data => {
+            if (data.loading) {
+              return data.text;
+            }
+            var markup = `<div class="row" style="max-width:98%">
+              <div class="col text-left">${data.name}</div>
+          </div>`;
+
+            return markup;
+          },
+          templateSelection: data => {
+            return data.name || data.text;
+          }
+        });
+
+        $("#frmUserAdd").submit(function(e) {
+          e.preventDefault();
+          addUser();
+        });
+      });
+
+      const changeUserStatus = (user_id, e) => {
+        let is_active = e.checked;
+
+        swal(
+          {
+            title: "Are you sure?",
+            text: "You are changing status of the user.",
+            type: "warning",
+            showCancelButton: true
+          },
+          function(isConfirm) {
+            if (isConfirm) {
+              $.ajax({
+                url: `/api/v1/users/${user_id}/status`,
+                method: "POST",
+                headers: { access_token: $.cookie("access_token") },
+                data: { is_active }
+              });
+            } else {
+              e.checked = !e.checked;
+            }
+          }
+        );
+      };
+    </script>
+  </body>
+</html>
