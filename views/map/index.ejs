@@ -1,1 +1,323 @@
-hi
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CoVi Helpers</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      navigator.geolocation.getCurrentPosition(showPosition);
+      function showPosition(position) {
+        mapboxgl.accessToken =
+          "pk.eyJ1IjoicmFraW1zdGgiLCJhIjoiY2s5Z3ZuYjlyMDJqZzNucWYwcTQ2eDN1YSJ9.Uytj-NimeyH7xspc-NTThg";
+        console.log(position.coords.longitude, position.coords.latitude);
+        var map = new mapboxgl.Map({
+          container: "map",
+          style: "mapbox://styles/mapbox/streets-v11",
+          center: [position.coords.longitude, position.coords.latitude], //[5.34432079999999,27.683777199999998],
+          zoom: 11.5
+        });
+
+        map.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            trackUserLocation: true
+          })
+        );
+
+        var size = 200;
+
+        var helpDot = {
+          width: size,
+          height: size,
+          data: new Uint8Array(size * size * 4),
+          onAdd: function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext("2d");
+          },
+          render: function () {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = (size / 2) * 0.3;
+            var outerRadius = (size / 2) * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = "rgba(255, 200, 200," + (1 - t) + ")";
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = "rgba(102, 255, 105, 1)"; //"rgba(255, 100, 100, 1)";
+            context.strokeStyle = "white";
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+          }
+        };
+
+        var requestDot = {
+          width: size,
+          height: size,
+          data: new Uint8Array(size * size * 4),
+          onAdd: function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext("2d");
+          },
+          render: function () {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = (size / 2) * 0.3;
+            var outerRadius = (size / 2) * 0.7 * t + radius;
+            var context = this.context;
+
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = "rgba(255, 200, 200," + (1 - t) + ")";
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = "rgba(255, 100, 100, 1)";
+            context.strokeStyle = "white";
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+          }
+        };
+
+        /////////////////////////
+        var dataA = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {
+                description:
+                  "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [85.34432079999999, 27.683777199999998]
+              }
+            },
+            {
+              type: "Feature",
+              properties: {
+                description:
+                  "<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>"
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [85.33207999999999, 27.637771999999998]
+              }
+            }
+          ]
+        };
+
+        var dataB = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {
+                description:
+                  "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [85.35532079999999, 27.666777199999998]
+              }
+            },
+            {
+              type: "Feature",
+              properties: {
+                description:
+                  "<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>"
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [85.31107999999999, 27.622771999999998]
+              }
+            }
+          ]
+        };
+        /////////////////////////
+
+        map.on("load", function () {
+          map.addImage("help-dot", helpDot, { pixelRatio: 4 });
+
+          map.addSource("help", {
+            type: "geojson",
+            data: dataA
+          });
+
+          // Add a layer showing the places.
+          map.addLayer({
+            id: "help",
+            type: "symbol",
+            source: "help",
+            layout: {
+              "icon-image": "help-dot",
+              "icon-allow-overlap": true
+            }
+          });
+
+          map.addLayer({
+            id: "places",
+            type: "symbol",
+            source: "places",
+            layout: {
+              "icon-image": "request-dot",
+              "icon-allow-overlap": true
+            }
+          });
+
+          // Create a popup, but don't add it to the map yet.
+          var popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+          });
+
+          map.on("mouseenter", "help", function (e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = "pointer";
+
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+              coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(coordinates).setHTML(description).addTo(map);
+          });
+
+          // Change it back to a pointer when it leaves.
+          map.on("mouseleave", "help", function () {
+            map.getCanvas().style.cursor = "";
+            popup.remove();
+          });
+        });
+
+        map.on("load", function () {
+          map.addImage("request-dot", requestDot, { pixelRatio: 4 });
+
+          map.addSource("request", {
+            type: "geojson",
+            data: dataB
+          });
+
+          // Add a layer showing the places.
+          map.addLayer({
+            id: "request",
+            type: "symbol",
+            source: "request",
+            layout: {
+              "icon-image": "request-dot",
+              "icon-allow-overlap": true
+            }
+          });
+
+          map.addLayer({
+            id: "request",
+            type: "symbol",
+            source: "request",
+            layout: {
+              "icon-image": "request-dot",
+              "icon-allow-overlap": true
+            }
+          });
+
+          // Create a popup, but don't add it to the map yet.
+          var popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+          });
+
+          map.on("mouseenter", "request", function (e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = "pointer";
+
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+              coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(coordinates).setHTML(description).addTo(map);
+          });
+
+          // Change it back to a pointer when it leaves.
+          map.on("mouseleave", "request", function () {
+            map.getCanvas().style.cursor = "";
+            popup.remove();
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
