@@ -12,14 +12,3 @@
 <script src="/js/plugins/pace/pace.min.js"></script>
 <!-- Sweet alert -->
 <script src="/js/plugins/sweetalert/sweetalert.min.js"></script>
-<script>
-  $(document).ready(function() {
-    if ($.cookie("name")) {
-      let curUser = JSON.parse($.cookie("name"));
-      $("#searchbar_welcome").html(curUser.first);
-    }
-
-    //
-    $("#mnuMgmt").show();
-  });
-</script>

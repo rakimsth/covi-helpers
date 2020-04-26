@@ -4,12 +4,20 @@
     <meta charset="utf-8" />
     <title>CoVi Helpers</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+    <script src="/js/jquery-3.1.1.min.js"></script>
     <style>
       body {
         margin: 0;
         padding: 0;
+        font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
       }
       #map {
         position: absolute;
@@ -21,21 +29,89 @@
         max-width: 400px;
         font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
       }
+      .abovemap {
+        position: absolute;
+        z-index: 1;
+      }
+
+      .box {
+        padding: 10px;
+        height: 100px;
+        width: 350px;
+        left: 10px;
+        top: 10px;
+        background-color: white;
+      }
+
+      #footer {
+        position: fixed;
+        bottom: 0;
+        width: 9%;
+        margin-bottom: 50px;
+        left: 10px;
+        background-color: white;
+        font-weight: bold;
+      }
+
+      /* basic positioning */
+      .legend {
+        list-style: none;
+      }
+      .legend li {
+        float: left;
+        margin-left: -35%;
+      }
+      .legend span {
+        border: 1px solid #ccc;
+        float: left;
+        width: 12px;
+        height: 12px;
+      }
+      /* your colors */
+      .legend .helpColor {
+        background-color: #66ff69;
+      }
+      .legend .requestColor {
+        background-color: #ff6464;
+      }
     </style>
   </head>
   <body>
+    <div class="abovemap box">
+      <h4 class="text-center">How can I help you?</h4>
+      <div class="row text-center">
+        <div class="col">
+          <button class="btn btn-danger" onclick="location.href='/requests/add'">
+            <i class="fa fa-heartbeat"></i> &nbsp;Request Help
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn btn-success" onclick="location.href='/requests/help'">
+            <i class="fa fa-heartbeat"></i> &nbsp;I want to Help
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="footer" class="abovemap">
+      <p>&nbsp;Legend:</p>
+      <ul class="legend">
+        <li><span class="helpColor"></span>&nbsp;I want to Help</li>
+        <li><span class="requestColor"></span>&nbsp;I need Help</li>
+      </ul>
+    </div>
     <div id="map"></div>
+
+    <script src="/js/bootstrap.min.js"></script>
     <script>
       navigator.geolocation.getCurrentPosition(showPosition);
       function showPosition(position) {
         mapboxgl.accessToken =
           "pk.eyJ1IjoicmFraW1zdGgiLCJhIjoiY2s5Z3ZuYjlyMDJqZzNucWYwcTQ2eDN1YSJ9.Uytj-NimeyH7xspc-NTThg";
-        console.log(position.coords.longitude, position.coords.latitude);
         var map = new mapboxgl.Map({
           container: "map",
           style: "mapbox://styles/mapbox/streets-v11",
           center: [position.coords.longitude, position.coords.latitude], //[5.34432079999999,27.683777199999998],
-          zoom: 11.5
+          zoom: 14.5
         });
 
         map.addControl(
@@ -137,64 +213,8 @@
             return true;
           }
         };
-
-        /////////////////////////
-        var dataA = {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                description:
-                  "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [85.34432079999999, 27.683777199999998]
-              }
-            },
-            {
-              type: "Feature",
-              properties: {
-                description:
-                  "<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>"
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [85.33207999999999, 27.637771999999998]
-              }
-            }
-          ]
-        };
-
-        var dataB = {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                description:
-                  "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [85.35532079999999, 27.666777199999998]
-              }
-            },
-            {
-              type: "Feature",
-              properties: {
-                description:
-                  "<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>"
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [85.31107999999999, 27.622771999999998]
-              }
-            }
-          ]
-        };
-        /////////////////////////
+        let dataA = <%-JSON.stringify(dataA)%>;
+        let dataB = <%-JSON.stringify(dataB)%>;
 
         map.on("load", function () {
           map.addImage("help-dot", helpDot, { pixelRatio: 4 });
@@ -211,16 +231,6 @@
             source: "help",
             layout: {
               "icon-image": "help-dot",
-              "icon-allow-overlap": true
-            }
-          });
-
-          map.addLayer({
-            id: "places",
-            type: "symbol",
-            source: "places",
-            layout: {
-              "icon-image": "request-dot",
               "icon-allow-overlap": true
             }
           });
@@ -266,16 +276,6 @@
           });
 
           // Add a layer showing the places.
-          map.addLayer({
-            id: "request",
-            type: "symbol",
-            source: "request",
-            layout: {
-              "icon-image": "request-dot",
-              "icon-allow-overlap": true
-            }
-          });
-
           map.addLayer({
             id: "request",
             type: "symbol",

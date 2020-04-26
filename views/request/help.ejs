@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <h3 class="text-center">Add New Helping Hand</h3>
+      <hr />
+      <form action="" method="post" id="pform">
+        <input type="hidden" name="type" value="help" />
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="col-md-12">
+              <div class="form-group form-group--float">
+                <label><b>Name</b></label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value=""
+                  class="form-control"
+                  data-validation="required"
+                />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label><b>Contact (Mobile/Email)</b></label>
+                    <input
+                      type="text"
+                      id="contact"
+                      name="contact"
+                      value=""
+                      class="form-control"
+                      data-validation-length="7-15"
+                    />
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label><b>Time (0-24 hrs)</b></label>
+                    <input type="text" id="time" name="time" value="" class="form-control" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <label><b>Message</b></label>
+                <textarea
+                  type="text"
+                  id="message"
+                  name="message"
+                  value=""
+                  class="form-control"
+                  rows="5"
+                  cols="50"
+                  data-validation="required"
+                ></textarea>
+              </div>
+            </div>
+            <div class="hr-line-dashed"></div>
+            <div class="form-group row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4 col-sm-offset-2">
+                <button class="btn btn-danger btn-sm" onclick="location.href='/'" type="submit">
+                  Go Back
+                </button>
+                <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              </div>
+
+              <div class="col-sm-4"></div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label
+              ><b>Meeting Location</b>
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                title="For your own safety, set meeting location at some public places"
+              >
+                <i class="fa fa-info-circle fa-lg" style="color: black;"></i></span
+            ></label>
+            <input
+              class="form-control"
+              type="text"
+              placeholder="Type your location here..."
+              id="searchLocation"
+            />
+            <div id="googleMap" style="width: 100%; height: 200px;"></div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="longitude"><b>Latitude:</b></label>
+                  <input class="form-control" name="longitude" id="longitude" disabled />
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="latitude"><b>longitude:</b></label>
+                  <input class="form-control" name="latitude" id="latitude" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <% include ../_layouts/foot %>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://maps.google.com/maps/api/js?v=3&key=AIzaSyBvExzwwXB7vhWchWY57j91js1EqU7Mssc&libraries=places&callback=myMap"
+      async
+      defer
+    ></script>
+    <script src="/js/gmap.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $.validate({ form: "#pform" });
+
+        $("#pform").submit(function (e) {
+          e.preventDefault();
+          saveHelp();
+        });
+      });
+
+      function getFormData($form) {
+        var unindexed_array = $form.serializeArray();
+        var indexed_array = {};
+
+        $.map(unindexed_array, function (n, i) {
+          indexed_array[n["name"]] = n["value"];
+        });
+
+        return indexed_array;
+      }
+
+      var saveHelp = () => {
+        let form = $("#pform");
+        if (!form.isValid()) return;
+        let long = $("#latitude").val();
+        let lat = $("#longitude").val();
+        let formdata = getFormData($("#pform"));
+        Object.assign(formdata, { lat: lat, long: long });
+        $.ajax({
+          url: "/api/v1/requests",
+          method: "POST",
+          data: formdata
+        })
+          .done(function (data) {
+            window.location.replace("/");
+          })
+          .fail(function (err) {
+            alert(err.responseJSON.message);
+          });
+      };
+    </script>
+  </body>
+</html>
