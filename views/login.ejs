@@ -82,11 +82,11 @@
   </head>
 
   <body class="">
-    <div class="loginColumns animated fadeInDown" style="background:white">
+    <div class="loginColumns animated fadeInDown" style="background: white;">
       <div class="row">
         <div class="col-md-6 text-center">
-          <img src="/img/logos/rumsan-tech.png" width="160" style="margin-bottom:20px;" />
-          <h1>Rumsan App</h1>
+          <img src="/img/logos/covid.png" width="160" style="margin-bottom: 20px;" />
+          <h1>CoVi Helpers</h1>
         </div>
         <div class="col-md-6">
           <div class="ibox-content">
@@ -118,20 +118,15 @@
                 />
               </div>
               <p>
-                <a href="#" data-toggle="modal" data-target="#forgotPassModal">Forgot Password?</a>
+                Demo Purpose:
+                <br />
+                username: test@covihelpers
+                <br />
+                password: covihelpers
               </p>
               <button type="submit" class="btn btn-primary block full-width m-b">
                 Login
               </button>
-              <div class="or-seperator"><i>or</i></div>
-              <div class="text-center social-btn">
-                <a href="/auth/facebook" class="btn btn-facebook btn-block"
-                  ><i class="fa fa-facebook"></i> Sign in with <b>Facebook</b></a
-                >
-                <a href="/auth/google" class="btn btn-danger btn-block"
-                  ><i class="fa fa-google"></i> Sign in with <b>Google</b></a
-                >
-              </div>
             </form>
             <p class="m-t"><small>Please do not share your login credentials.</small></p>
           </div>
@@ -141,11 +136,12 @@
       <div id="info" class="alert alert-success row ml-3 mr-3"></div>
       <hr />
       <div class="row">
-        <div class="col-md-6">
-          <img src="/img/favicon.png" width="16" />&nbsp;&nbsp;<strong>Client Company Name</strong>
-        </div>
+        <div class="col-md-6">&nbsp;&nbsp;<strong>Created by Raktim Shrestha</strong></div>
         <div class="col-md-6 text-right">
-          <small>© 2018 <a href="https://rumsan.com" target="_blank">Rumsan Associates</a></small>
+          <small
+            >© Github
+            <a href="https://github.com/rakimsth" target="_blank">Raktim Shrestha</a></small
+          >
         </div>
       </div>
     </div>
@@ -155,11 +151,11 @@
     <script src="js/bootstrap.js"></script>
 
     <script>
-      $(document).ready(function() {
+      $(document).ready(function () {
         $("#msg").hide();
         $("#info").hide();
 
-        $("#frmForgotPass").submit(function(e) {
+        $("#frmForgotPass").submit(function (e) {
           e.preventDefault();
           forgotPass();
         });
@@ -175,12 +171,12 @@
           method: "POST",
           data: { username, password }
         })
-          .done(function(data) {
+          .done(function (data) {
             if (data.token) {
-              window.location.replace("/");
+              window.location.replace("/cms");
             }
           })
-          .fail(function(err) {
+          .fail(function (err) {
             $("#msg").html(err.responseJSON.message);
             $("#msg").show();
           });
@@ -194,12 +190,12 @@
           method: "POST",
           data: { email: recov_email }
         })
-          .done(function(d) {
+          .done(function (d) {
             $("#info").html("Please check your email for further instructions.");
             $("#info").show();
             $("#forgotPassModal").modal("hide");
           })
-          .fail(function(e) {
+          .fail(function (e) {
             $("#info").html("Please check your email for further instructions.");
             $("#info").show();
             $("#forgotPassModal").modal("hide");

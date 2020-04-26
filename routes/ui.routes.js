@@ -6,8 +6,12 @@ const SettingController = require("../modules/setting/setting.controller");
 const UserRouter = require("../modules/user/user.routes.ui");
 
 /* GET home page. */
-router.get("/", SecureUI(), (req, res, next) => {
-  res.render("index", { title: "Rumsan Seed" });
+router.get("/", (req, res, next) => {
+  res.render("map/index", { title: "Home Page" });
+});
+
+router.get("/cms", SecureUI(), (req, res, next) => {
+  res.render("index", { title: "My Dashboard" });
 });
 
 router.get("/app", async (req, res, next) => {

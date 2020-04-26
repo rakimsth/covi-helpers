@@ -27,10 +27,6 @@ router.get("/logout", (req, res, next) => {
   res.redirect("/login");
 });
 
-router.get("/register", (req, res, next) => {
-  res.render("register", { title: "Register" });
-});
-
 router.get(
   "/auth/facebook",
   passport.authenticate("facebook", {
@@ -47,7 +43,7 @@ router.get("/auth/facebook/callback", async (req, res, next) => {
     res.cookie("user", JSON.stringify(user));
     res.cookie("permissions", JSON.stringify(tokenData.data.permissions));
     if (redirect_url) res.redirect(redirect_url);
-    else res.redirect("/");
+    else res.redirect("/cms");
   })(req, res, next);
 });
 
@@ -68,7 +64,7 @@ router.get("/auth/google/callback", (req, res, next) => {
     res.cookie("user", JSON.stringify(user));
     res.cookie("permissions", JSON.stringify(tokenData.data.permissions));
     if (redirect_url) res.redirect(redirect_url);
-    else res.redirect("/");
+    else res.redirect("/cms");
   })(req, res, next);
 });
 
