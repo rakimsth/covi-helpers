@@ -31,7 +31,7 @@ router.post("/", async (req, res, next) => {
       payload.mapdata = {
         type: "Feature",
         properties: {
-          description: `<strong>${payload.name} needs help!!</strong><p>${payload.message}</p><p>Time: ${payload.time} hr</p><p>Reach out to me at ${payload.contact}</p>`
+          description: `<strong>${payload.name} wants to help!!</strong><p>${payload.message}</p><p>Time: ${payload.time} hr</p><p>Reach out to me at ${payload.contact}</p>`
         },
         geometry: {
           type: "Point",
