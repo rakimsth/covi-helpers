@@ -111,7 +111,7 @@
           container: "map",
           style: "mapbox://styles/mapbox/streets-v11",
           center: [position.coords.longitude, position.coords.latitude], //[5.34432079999999,27.683777199999998],
-          zoom: 14.5
+          zoom: 15.5
         });
 
         map.addControl(
@@ -217,7 +217,8 @@
         let dataB = <%-JSON.stringify(dataB)%>;
 
         map.on("load", function () {
-          map.addImage("help-dot", helpDot, { pixelRatio: 4 });
+
+          map.addImage("request-dot", requestDot, { pixelRatio: 4 });
 
           map.addSource("help", {
             type: "geojson",
@@ -230,7 +231,7 @@
             type: "symbol",
             source: "help",
             layout: {
-              "icon-image": "help-dot",
+              "icon-image": "request-dot",
               "icon-allow-overlap": true
             }
           });
@@ -268,7 +269,7 @@
         });
 
         map.on("load", function () {
-          map.addImage("request-dot", requestDot, { pixelRatio: 4 });
+          map.addImage("help-dot", helpDot, { pixelRatio: 4 });
 
           map.addSource("request", {
             type: "geojson",
@@ -281,7 +282,7 @@
             type: "symbol",
             source: "request",
             layout: {
-              "icon-image": "request-dot",
+              "icon-image": "help-dot",
               "icon-allow-overlap": true
             }
           });
